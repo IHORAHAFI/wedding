@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}FAQ - Wedding Supplies & Decoration{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h2>Frequently Asked Questions</h2>
+    <p>Welcome to our FAQ page. We want your shopping experience to be great, simple, and transparent. Below is a full explanation of ordering, shipping, returns, and policies.</p>
+
+    <h4>How do I place an order?</h4>
+    <p>1. Browse products in the Wedding Products catalog.<br>
+    2. Select the correct quantity, color, and size (if applicable).<br>
+    3. Click <strong>Add to Cart</strong> and proceed to checkout.<br>
+    4. Enter shipping information and select delivery method.<br>
+    5. Confirm payment and order summary, then click <strong>Place Order</strong>.</p>
+
+    <h4>Which payment methods do you accept?</h4>
+    <ul>
+        <li>Credit card (Visa, MasterCard, American Express)</li>
+        <li>Debit card</li>
+        <li>PayPal</li>
+        <li>Mobile bank transfer (where supported)</li>
+    </ul>
+    <p>All transactions are protected by SSL encryption.</p>
+
+    <h4>Where do you ship?</h4>
+    <p>We ship locally and internationally. Estimated transit times are listed in <a href="{% url 'account:shipping_policy' %}">Shipping Policy</a>.</p>
+
+    <h4>Can I track my shipment?</h4>
+    <p>Yes. After shipping, you receive an email with a tracking number and carrier link.</p>
+
+    <h4>How does returns and exchanges work?</h4>
+    <p>Please see our <a href="{% url 'account:returns_exchanges' %}">Returns & Exchanges</a> page for step-by-step instructions and requirements.</p>
+
+    <h4>Why was my order cancelled?</h4>
+    <p>Common reasons include: payment authorization failure, item out of stock, or mismatched shipping address. You will receive email notification with a full explanation.</p>
+
+    <h4>Who should I contact for support?</h4>
+    <p>Email <a href="mailto:support@weddingdecor.com">support@weddingdecor.com</a> or use the <a href="{% url 'account:contact' %}">Contact</a> page form. Include your order number for faster support.</p>
+</div>
+{% endblock %}

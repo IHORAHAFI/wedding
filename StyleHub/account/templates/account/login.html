@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - Wedding Supplies & Decoration{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-wrapper {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 50px 0;
+    }
+    
+    .login-card {
+        background: linear-gradient(135deg, rgba(10, 12, 16, 0.85) 0%, rgba(15, 20, 25, 0.85) 30%, rgba(26, 31, 46, 0.85) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 400px;
+        animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(212, 175, 55, 0.12);
+    }
+    
+    .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .login-header h2 {
+        color: #FFFFFF;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .login-header p {
+        color: #9CA3AF !important;
+    }
+    
+    .login-header .brand-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        animation: spin 10s linear infinite;
+        color: #D4AF37;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+    
+    .form-group i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #D4AF37;
+        z-index: 10;
+    }
+    
+    .form-control {
+        padding-left: 45px;
+        height: 50px;
+        border-radius: 25px;
+        border: 2px solid rgba(255, 255, 255, 0.1) !important;
+        transition: all 0.3s ease;
+        background: rgba(8, 10, 14, 0.8) !important;
+        color: #E5E7EB !important;
+    }
+    
+    .form-control::placeholder {
+        color: #6B7280 !important;
+    }
+    
+    .form-control:focus {
+        border-color: #D4AF37 !important;
+        box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25) !important;
+        background: rgba(10, 12, 18, 0.9) !important;
+    }
+    
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .remember-me {
+        display: flex;
+        align-items: center;
+        color: #9CA3AF;
+    }
+    
+    .remember-me input {
+        margin-right: 5px;
+        accent-color: #D4AF37;
+    }
+    
+    .forgot-password {
+        color: #D4AF37;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .forgot-password:hover {
+        color: #B8960F;
+    }
+    
+    .register-link {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(212, 175, 55, 0.12);
+        color: #9CA3AF;
+    }
+    
+    .register-link a {
+        color: #D4AF37;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .register-link a:hover {
+        color: #B8960F;
+    }
+    
+    .social-login {
+        text-align: center;
+        margin-top: 20px;
+        color: #9CA3AF;
+    }
+    
+    .social-btn {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 50%;
+        margin: 0 5px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .social-btn.facebook {
+        background: #3b5998;
+    }
+    
+    .social-btn.google {
+        background: #db4a39;
+    }
+    
+    .social-btn.twitter {
+        background: #00acee;
+    }
+    
+    .social-btn:hover {
+        transform: translateY(-3px) rotate(360deg);
+    }
+    
+    .login-card .alert {
+        background: rgba(239, 68, 68, 0.15) !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        color: #FCA5A5 !important;
+        border-radius: 15px;
+    }
+    
+    .login-card .btn-primary {
+        background: linear-gradient(135deg, #D4AF37, #B8960F) !important;
+        border: none !important;
+        color: #1a1a2e !important;
+        font-weight: 600 !important;
+    }
+    
+    .login-card .btn-primary:hover {
+        background: linear-gradient(135deg, #B8960F, #9A7D0F) !important;
+    }
+    
+    .login-card .invalid-feedback {
+        color: #FCA5A5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="login-card animate__animated animate__fadeIn">
+        <div class="login-header">
+            <div class="brand-icon">
+                <i class="fas fa-ring"></i>
+            </div>
+            <h2><i class="fas fa-sign-in-alt me-2"></i>Welcome to Your Wedding Portal</h2>
+            <p class="text-muted">Login to access your wedding planning account</p>
+        </div>
+        
+        <form method="post" action="{% url 'account:login' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <i class="fas fa-user"></i>
+                <input type="text" 
+                       class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                       name="username" 
+                       placeholder="Username or Email"
+                       value="{{ form.username.value|default:'' }}"
+                       required>
+                {% if form.username.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.username.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" 
+                       class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                       name="password" 
+                       placeholder="Password"
+                       required>
+                {% if form.password.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.password.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-options">
+                <div class="remember-me">
+                    <input type="checkbox" name="remember" id="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="{% url 'account:password_reset' %}" class="forgot-password">
+                    <i class="fas fa-question-circle"></i> Forgot Password?
+                </a>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+            
+            <div class="register-link">
+                Don't have an account? <a href="{% url 'account:register' %}">Register for your wedding account</a>
+            </div>
+            
+            <div class="social-login">
+                <p class="text-muted mb-3">Or login with</p>
+                <a href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-btn google"><i class="fab fa-google"></i></a>
+                <a href="#" class="social-btn twitter"><i class="fab fa-twitter"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

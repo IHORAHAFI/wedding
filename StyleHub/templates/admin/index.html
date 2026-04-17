@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div id="content-main">
+    <h1 class="h2 mb-4">{{ title }}</h1>
+    <div class="row">
+        {% for app in app_list %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0"><a href="{{ app.app_url }}" class="text-decoration-none">{{ app.name }}</a></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for model in app.models %}
+                                <a href="{{ model.admin_url }}" class="btn btn-outline-primary btn-sm">{{ model.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

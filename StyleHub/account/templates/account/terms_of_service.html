@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Terms of Service - Wedding Supplies & Decoration{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h2>Terms of Service</h2>
+    <p>By using our site and placing orders, you agree to these terms and conditions. Please read carefully to protect your rights and ours.</p>
+
+    <h4>Account and registration</h4>
+    <ul>
+        <li>You must provide accurate personal information (name, address, phone, email).</li>
+        <li>Keep passwords secure. You are responsible for all activity on your account.</li>
+        <li>We reserve the right to suspend accounts for fraudulent or abusive behavior.</li>
+    </ul>
+
+    <h4>Order acceptance</h4>
+    <p>Order confirmation is not a guarantee. Orders are subject to stock availability and payment authorization. We may cancel orders due to inventory, pricing errors, or risk concerns, with notice sent by email.</p>
+
+    <h4>Pricing and payments</h4>
+    <ul>
+        <li>Prices are shown in local currency and include VAT where applicable.</li>
+        <li>Shipping is calculated at checkout.</li>
+        <li>Payment is captured when the order is shipped, not when placed.</li>
+    </ul>
+
+    <h4>Shipping and delivery</h4>
+    <p>See <a href="{% url 'account:shipping_policy' %}">Shipping Policy</a>. Delivery time is estimate only; we are not liable for carrier delays.</p>
+
+    <h4>Cancellations</h4>
+    <p>Cancel before shipment for full refund. Once shipped, order is subject to returns process and may incur return shipping fees.</p>
+
+    <h4>Returns and refunds</h4>
+    <p>See <a href="{% url 'account:returns_exchanges' %}">Returns & Exchanges</a>. Refunds processed after quality inspection. Non-compliant returns may be reduced or denied.</p>
+
+    <h4>Limitation of liability</h4>
+    <p>We are not responsible for lost profit, incidental or consequential damages from use of products, except where prohibited by law.</p>
+
+    <h4>Intellectual property</h4>
+    <p>All content on this site belongs to Wedding Supplies & Decoration. Reproduction without permission is prohibited.</p>
+
+    <h4>Changes to terms</h4>
+    <p>We may update these terms at any time; changes apply from publication date on this website.</p>
+
+    <h4>Contact</h4>
+    <p>Questions regarding terms can be sent to <a href="mailto:support@weddingdecor.com">support@weddingdecor.com</a>.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Admin Dashboard') }}{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Professional & Modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    
+    <!-- AOS (Animate on Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #A5B4FC;
+            --primary-dark: #818CF8;
+            --primary-light: #CBD5E1;
+            --accent: #60A5FA;
+            --danger: #EF4444;
+            --card-bg: linear-gradient(135deg, rgba(10, 12, 16, 0.90) 0%, rgba(12, 16, 22, 0.90) 30%, rgba(18, 23, 32, 0.90) 100%);
+            --card-border: rgba(148, 163, 184, 0.12);
+            --text-primary: #E5E7EB;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --white: #FFFFFF;
+            --white-90: rgba(255, 255, 255, 0.9);
+            --white-80: rgba(255, 255, 255, 0.8);
+            --white-70: rgba(255, 255, 255, 0.7);
+            --white-60: rgba(255, 255, 255, 0.6);
+            --white-15: rgba(255, 255, 255, 0.15);
+            --white-12: rgba(255, 255, 255, 0.12);
+            --white-10: rgba(255, 255, 255, 0.1);
+            --white-08: rgba(255, 255, 255, 0.08);
+            --white-06: rgba(255, 255, 255, 0.06);
+            --white-05: rgba(255, 255, 255, 0.05);
+            --white-03: rgba(255, 255, 255, 0.03);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
+            --transition: all 0.2s ease;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif !important;
+            background: linear-gradient(135deg, #0a0c10 0%, #0f1419 30%, #1a1f2e 100%) !important;
+            color: var(--text-primary) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        #header {
+            background: rgba(8, 10, 14, 0.95) !important;
+            border-bottom: 1px solid var(--white-08) !important;
+            color: var(--white) !important;
+        }
+        
+        #site-name a {
+            color: var(--primary) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+        }
+        
+        #content-main {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: 12px !important;
+            padding: 2rem !important;
+            margin: 2rem 0 !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .module h2, .module caption, .module th {
+            color: var(--white) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        
+        #changelist table, #result_list {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            color: var(--text-primary) !important;
+        }
+        
+        #changelist table thead, #result_list thead {
+            background: rgba(148, 163, 184, 0.12) !important;
+        }
+        
+        #changelist table th, #result_list th,
+        #changelist table td, #result_list td {
+            padding: 1rem !important;
+            border-bottom: 1px solid var(--white-08) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        #changelist table th {
+            background: rgba(148, 163, 184, 0.12) !important;
+            font-weight: 600 !important;
+        }
+        
+        a {
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+        
+        a:hover {
+            color: var(--primary-light) !important;
+        }
+        
+        .submit-row input[type="submit"],
+        .default {
+            background: var(--primary) !important;
+            color: #0a0c10 !important;
+            border: none !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: var(--transition) !important;
+        }
+        
+        .submit-row input[type="submit"]:hover,
+        .default:hover {
+            background: var(--primary-dark) !important;
+        }
+        
+        .alert {
+            border-radius: 8px !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        /* Override default admin styles */
+        #container {
+            background: transparent !important;
+        }
+        
+        #content {
+            background: transparent !important;
+        }
+        
+        .breadcrumbs {
+            background: rgba(8, 10, 14, 0.8) !important;
+            color: var(--text-secondary) !important;
+        }
+        
+        .breadcrumbs a {
+            color: var(--primary) !important;
+        }
+        
+        /* Form styling */
+        .form-row {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: 8px !important;
+            padding: 1rem !important;
+            margin-bottom: 1rem !important;
+        }
+        
+        .form-row label {
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+        
+        .form-row input, .form-row select, .form-row textarea {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid var(--white-12) !important;
+            border-radius: 6px !important;
+            color: var(--text-primary) !important;
+            padding: 0.5rem !important;
+        }
+        
+        .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.18) !important;
+        }
+        
+        /* Card styling for forms */
+        .card {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: 12px !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .card-header {
+            background: rgba(148, 163, 184, 0.12) !important;
+            border-bottom: 1px solid var(--card-border) !important;
+            color: var(--white) !important;
+        }
+        
+        .card-body {
+            background: transparent !important;
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background: var(--primary) !important;
+            border-color: var(--primary) !important;
+            color: #0a0c10 !important;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark) !important;
+            border-color: var(--primary-dark) !important;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-color: var(--white-12) !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: var(--white-20) !important;
+        }
+        
+        /* Module styling */
+        .module {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: 12px !important;
+            color: var(--text-primary) !important;
+        }
+        
+        .module caption {
+            background: rgba(148, 163, 184, 0.12) !important;
+            color: var(--white) !important;
+            font-weight: 600 !important;
+        }
+        
+        /* Pagination */
+        .paginator {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 8px !important;
+            padding: 1rem !important;
+        }
+        
+        .paginator a {
+            color: var(--primary) !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px !important;
+            margin: 0 0.25rem !important;
+        }
+        
+        .paginator a:hover {
+            background: rgba(148, 163, 184, 0.12) !important;
+        }
+        
+        /* Filters */
+        #changelist-filter {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            border-radius: 12px !important;
+            color: var(--text-primary) !important;
+        }
+        
+        #changelist-filter h2, #changelist-filter h3 {
+            color: var(--white) !important;
+        }
+        
+        #changelist-filter a {
+            color: var(--primary) !important;
+        }
+        
+        /* Object tools */
+        .object-tools {
+            background: rgba(8, 10, 14, 0.8) !important;
+            border-radius: 8px !important;
+            padding: 1rem !important;
+        }
+        
+        .object-tools a {
+            background: var(--primary) !important;
+            color: #0a0c10 !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px !important;
+            margin-right: 0.5rem !important;
+            text-decoration: none !important;
+        }
+        
+        .object-tools a:hover {
+            background: var(--primary-dark) !important;
+        }
+    </style>
+{% endblock %}
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Admin Dashboard') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% block content_title %}{% endblock %}
+    {% block content_subtitle %}{% endblock %}
+    {% block object-tools %}{% endblock %}
+    {{ content }}
+    {% block pagination %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

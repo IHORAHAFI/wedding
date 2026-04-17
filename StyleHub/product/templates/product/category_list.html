@@ -1,0 +1,99 @@
+{% extends 'product/base_product.html' %}
+{% load static %}
+
+{% block title %}Categories - StyleHub{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <!-- Header -->
+    <div class="text-center mb-5 animate__animated animate__fadeIn">
+        <h1 class="display-4">Shop by Category</h1>
+        <p class="lead text-muted">Browse our wide selection of fashion categories</p>
+    </div>
+    
+    <!-- Categories Grid -->
+    <div class="row g-4">
+        {% for category in categories %}
+            <div class="col-lg-4 col-md-6">
+                <div class="category-card animate__animated animate__fadeInUp" 
+                     onclick="window.location.href='{% url 'product:category_detail' category.slug %}'"
+                     style="animation-delay: {{ forloop.counter|divisibleby:3 }}s;">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        <div class="card-img-wrapper" style="height: 250px; overflow: hidden;">
+                            {% if category.image %}
+                                <img src="{{ category.image.url }}" 
+                                     class="card-img-top h-100 w-100" 
+                                     style="object-fit: cover;"
+                                     alt="{{ category.name }}">
+                            {% else %}
+                                <div class="bg-light h-100 w-100 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-tshirt fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text text-muted">{{ category.description|truncatechars:100 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-primary">{{ category.product_count }} Products</span>
+                                <a href="{% url 'product:category_detail' category.slug %}" class="btn btn-outline-primary btn-sm">
+                                    Browse <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="empty-state">
+                    <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                    <h3>No Categories Found</h3>
+                    <p class="text-muted">Categories will appear here once added.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .card-img-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-img-wrapper img {
+        transition: transform 0.5s ease;
+    }
+    
+    .hover-card:hover .card-img-wrapper img {
+        transform: scale(1.1);
+    }
+    
+    .category-card {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

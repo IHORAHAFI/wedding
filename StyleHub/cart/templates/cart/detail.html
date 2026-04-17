@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Cart - StyleHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-shopping-cart me-2"></i>Your Cart
+                {% if order_count > 0 %}
+                    <span class="badge bg-primary ms-2">{{ order_count }} item{{ order_count|pluralize }}</span>
+                {% endif %}
+            </h1>
+        </div>
+    </div>
+
+    {% if orders %}
+        <div class="row">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        {% for order in orders %}
+                            <div class="cart-item d-flex align-items-center border-bottom py-3">
+                                <div class="cart-item-image me-3">
+                                    {% if order.product.main_image %}
+                                        <img src="{{ order.product.main_image.url }}"
+                                             alt="{{ order.product.name }}"
+                                             class="rounded"
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                             style="width: 80px; height: 80px;">
+                                            <i class="fas fa-image text-muted fa-2x"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="cart-item-details flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'product:detail' order.product.slug %}" class="text-decoration-none">
+                                            {{ order.product.name }}
+                                        </a>
+                                    </h6>
+                                    {% if order.size %}
+                                        <p class="text-muted small mb-1">Size: {{ order.get_size_display }}</p>
+                                    {% else %}
+                                        <p class="text-muted small mb-1">{{ order.product.category.name }}</p>
+                                    {% endif %}
+                                    <div class="d-flex align-items-center">
+                                        <span class="fw-bold text-primary">FRw {{ order.product.current_price }}</span>
+                                        {% if order.product.discount_price and order.product.discount_price < order.product.price %}
+                                            <span class="text-muted text-decoration-line-through ms-2">FRw {{ order.product.price }}</span>
+                                            <span class="badge bg-success ms-2">{{ order.product.discount_percentage }}% off</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="cart-item-quantity me-3">
+                                    <div class="input-group input-group-sm" style="width: 120px;">
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                                onclick="updateQuantity({{ order.id }}, {{ order.quantity|add:-1 }})">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number"
+                                               class="form-control text-center"
+                                               value="{{ order.quantity }}"
+                                               min="1"
+                                               max="{{ order.product.stock }}"
+                                               onchange="updateQuantity({{ order.id }}, this.value)">
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                                onclick="updateQuantity({{ order.id }}, {{ order.quantity|add:1 }})">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="cart-item-total me-3">
+                                    <span class="fw-bold">FRw {{ order.total_price }}</span>
+                                </div>
+
+                                <div class="cart-item-actions">
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            onclick="removeOrder({{ order.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-receipt me-2"></i>Order Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Subtotal ({{ order_count }} item{{ order_count|pluralize }})</span>
+                            <span>FRw {{ total_amount }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Shipping</span>
+                            <span class="text-success">Free</span>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Total</strong>
+                            <strong class="text-primary">FRw {{ total_amount }}</strong>
+                        </div>
+
+                        <a href="{% url 'cart:checkout' %}" class="btn btn-primary w-100 mb-3">
+                            <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                        </a>
+
+                        <a href="{% url 'product:list' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Empty Cart -->
+        <div class="row">
+            <div class="col-12 text-center py-5">
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                    <h3>Your cart is empty</h3>
+                    <p class="text-muted mb-4">Add some wedding supplies to get started!</p>
+                    <a href="{% url 'product:list' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-gift me-2"></i>Start Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function updateQuantity(orderId, newQuantity) {
+    if (newQuantity < 1) return;
+
+    fetch(`/cart/update/${orderId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            'quantity': newQuantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload(); // Simple reload for now
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function removeOrder(orderId) {
+    if (!confirm('Are you sure you want to remove this item from your cart?')) return;
+
+    fetch(`/cart/remove/${orderId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+</script>
+{% endblock %}

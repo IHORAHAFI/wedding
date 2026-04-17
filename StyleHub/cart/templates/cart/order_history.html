@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History - StyleHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-history me-2"></i>Order History
+            </h1>
+        </div>
+    </div>
+
+    {% if orders %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="mb-0">Order Summary</h5>
+                                <small class="text-muted">{{ orders|length }} order{{ orders|pluralize }}</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-muted">Total Spent</div>
+                                <div class="h5 mb-0">FRw {{ total_amount }}</div>
+                            </div>
+                        </div>
+                        <hr>
+                        {% for order in orders %}
+                            <div class="order-item d-flex align-items-center border-bottom py-3">
+                                <div class="order-item-image me-3">
+                                    {% if order.product.main_image %}
+                                        <img src="{{ order.product.main_image.url }}"
+                                             alt="{{ order.product.name }}"
+                                             class="rounded"
+                                             style="width: 60px; height: 60px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                                             style="width: 60px; height: 60px;">
+                                            <i class="fas fa-image text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="order-item-details flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'product:detail' order.product.slug %}" class="text-decoration-none">
+                                            {{ order.product.name }}
+                                        </a>
+                                    </h6>
+                                    <p class="text-muted small mb-1">{{ order.product.category.name }}</p>
+                                    <p class="text-muted small mb-1">Customer: {{ order.customer_name }} | {{ order.customer_email }} | {{ order.customer_phone }}</p>
+                                    <p class="text-muted small mb-1">Delivery: {{ order.shipping_address }}, {{ order.shipping_city }} {{ order.shipping_postal_code }}</p>
+                                    <p class="text-muted small mb-2">Payment: {{ order.get_payment_method_display }}</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="fw-bold">FRw {{ order.total_price }}</span>
+                                        <span class="text-muted ms-2">({{ order.quantity }} item{{ order.quantity|pluralize }})</span>
+                                    </div>
+                                </div>
+
+                                <div class="order-item-status me-3">
+                                    <span class="badge
+                                        {% if order.status == 'completed' %}bg-success
+                                        {% elif order.status == 'processing' %}bg-warning
+                                        {% elif order.status == 'cancelled' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ order.get_status_display|title }}
+                                    </span>
+                                </div>
+
+                                <div class="order-item-date">
+                                    <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- No Orders -->
+        <div class="row">
+            <div class="col-12 text-center py-5">
+                <div class="empty-orders">
+                    <i class="fas fa-shopping-bag fa-4x text-muted mb-4"></i>
+                    <h3>No orders yet</h3>
+                    <p class="text-muted mb-4">Your order history will appear here once you make your first purchase.</p>
+                    <a href="{% url 'product:list' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-cart me-2"></i>Start Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

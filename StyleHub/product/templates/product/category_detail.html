@@ -1,0 +1,195 @@
+{% extends 'product/base_product.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - StyleHub{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <!-- Category Header -->
+    <div class="category-header mb-5 animate__animated animate__fadeIn">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'product:category_list' %}">Categories</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+                    </ol>
+                </nav>
+                <h1 class="display-4">{{ category.name }}</h1>
+                <p class="lead text-muted">{{ category.description|default:"Browse our collection" }}</p>
+                <div class="category-stats">
+                    <span class="badge bg-primary me-2">{{ category.product_count }} Products</span>
+                    {% if category.parent %}
+                        <span class="badge bg-secondary">Subcategory of {{ category.parent.name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if category.image %}
+                <div class="col-md-4">
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-fluid rounded-3 shadow">
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Subcategories -->
+    {% if subcategories %}
+        <div class="subcategories mb-5">
+            <h3 class="mb-4">Subcategories</h3>
+            <div class="row g-3">
+                {% for subcat in subcategories %}
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'product:category_detail' subcat.slug %}" class="text-decoration-none">
+                            <div class="card text-center h-100 border-0 shadow-sm hover-subcategory">
+                                <div class="card-body">
+                                    {% if subcat.image %}
+                                        <img src="{{ subcat.image.url }}" 
+                                             alt="{{ subcat.name }}" 
+                                             class="img-fluid mb-3" 
+                                             style="height: 100px; object-fit: contain;">
+                                    {% else %}
+                                        <i class="fas fa-folder fa-3x text-primary mb-3"></i>
+                                    {% endif %}
+                                    <h6 class="card-title">{{ subcat.name }}</h6>
+                                    <span class="badge bg-light text-dark">{{ subcat.product_count }} products</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Products -->
+    <div class="products-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>Products in {{ category.name }}</h3>
+            
+            <!-- Sort Options -->
+            <div class="sort-options">
+                <select class="form-select" onchange="window.location.href=this.value">
+                    <option value="?sort=newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>
+                        Newest First
+                    </option>
+                    <option value="?sort=price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>
+                        Price: Low to High
+                    </option>
+                    <option value="?sort=price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>
+                        Price: High to Low
+                    </option>
+                    <option value="?sort=popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>
+                        Most Popular
+                    </option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="row g-4">
+            {% for product in products %}
+                <div class="col-lg-3 col-md-4 col-6">
+                    <div class="product-card">
+                        <div class="product-image">
+                            {% if product.main_image %}
+                                <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <img src="{% static 'images/placeholder.jpg' %}" alt="{{ product.name }}">
+                            {% endif %}
+                            
+                            {% if product.discount_percentage > 0 %}
+                                <span class="product-badge badge-sale">-{{ product.discount_percentage }}%</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <h6 class="product-title">{{ product.name|truncatechars:40 }}</h6>
+                            <div class="product-price">
+                                {% if product.discount_price and product.discount_price < product.price %}
+                                    <span class="current-price">FRw {{ product.discount_price }}</span>
+                                    <span class="old-price">FRw {{ product.price }}</span>
+                                    <div class="discount-info">
+                                        <span class="discount-percentage">{{ product.discount_percentage }}% off</span>
+                                    </div>
+                                {% else %}
+                                    <span class="current-price">FRw {{ product.price }}</span>
+                                    {% if product.discount_price %}
+                                        <div class="discount-info">
+                                            <span class="discount-note">Discount: FRw {{ product.discount_price }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="product-stock">
+                                {% if product.stock > 0 %}
+                                    <span class="stock-in"><i class="fas fa-check-circle"></i> In Stock</span>
+                                {% else %}
+                                    <span class="stock-out"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                        <h3>No Products Found</h3>
+                        <p class="text-muted">There are no products in this category yet.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for i in products.paginator.page_range %}
+                        {% if products.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                        {% elif i > products.number|add:'-3' and i < products.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .hover-subcategory {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-subcategory:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .hover-subcategory:hover h6 {
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}

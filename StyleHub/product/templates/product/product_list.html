@@ -1,0 +1,567 @@
+{% extends 'product/base_product.html' %}
+{% load static url_replace_tags %}
+
+{% block title %}Wedding Supplies & Decorations{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <!-- Category Pills -->
+    <div class="category-pills animate__animated animate__fadeIn">
+        <a href="{% url 'product:list' %}" class="category-pill {% if not current_category %}active{% endif %}">
+            <i class="fas fa-champagne-glasses me-2"></i>All Wedding Supplies
+        </a>
+        {% for category in categories %}
+            <a href="{% url 'product:list' %}?category={{ category.slug }}" 
+               class="category-pill {% if current_category == category.slug %}active{% endif %}">
+                <i class="fas fa-tag me-2"></i>{{ category.name }}
+                <span class="badge badge-dark ms-2">{{ category.product_count }}</span>
+            </a>
+        {% endfor %}
+    </div>
+    
+    <div class="row">
+        <!-- Filter Sidebar -->
+        <div class="col-lg-3">
+            <div class="filter-sidebar animate__animated animate__fadeInLeft">
+                <div class="filter-header">
+                    <h5 class="filter-title">
+                        <i class="fas fa-filter me-2"></i>Filters
+                    </h5>
+                    <a href="{% url 'product:list' %}" class="clear-filters">
+                        <i class="fas fa-times"></i> Clear All
+                    </a>
+                </div>
+                
+                <form method="get" id="filterForm">
+                    <!-- Search -->
+                    <div class="filter-section">
+                        <h6 class="filter-section-title">Search</h6>
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="search" 
+                                   placeholder="Search products..."
+                                   value="{{ request.GET.search|default:'' }}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Categories -->
+                    <div class="filter-section">
+                        <h6 class="filter-section-title">Wedding Categories</h6>
+                        {% for category in categories %}
+                            <div class="filter-option">
+                                <input type="checkbox" 
+                                       name="category" 
+                                       value="{{ category.slug }}"
+                                       id="cat_{{ category.id }}"
+                                       {% if category.slug in selected_categories %}checked{% endif %}>
+                                <label for="cat_{{ category.id }}">{{ category.name }} ({{ category.product_count }})</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Brands -->
+                    <div class="filter-section">
+                        <h6 class="filter-section-title">Decoration Brands</h6>
+                        {% for brand in brands %}
+                            <div class="filter-option">
+                                <input type="checkbox" 
+                                       name="brand" 
+                                       value="{{ brand.slug }}"
+                                       id="brand_{{ brand.id }}"
+                                       {% if brand.slug in selected_brands %}checked{% endif %}>
+                                <label for="brand_{{ brand.id }}">{{ brand.name }} ({{ brand.product_count }})</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Gender -->
+                    <div class="filter-section">
+                        <h6 class="filter-section-title">For Whom?</h6>
+                        <div class="filter-option">
+                            <input type="radio" name="gender" value="M" id="gender_m"
+                                   {% if request.GET.gender == 'M' %}checked{% endif %}>
+                            <label for="gender_m">Men</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="radio" name="gender" value="W" id="gender_w"
+                                   {% if request.GET.gender == 'W' %}checked{% endif %}>
+                            <label for="gender_w">Women</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="radio" name="gender" value="K" id="gender_k"
+                                   {% if request.GET.gender == 'K' %}checked{% endif %}>
+                            <label for="gender_k">Kids</label>
+                        </div>
+                        <div class="filter-option">
+                            <input type="radio" name="gender" value="U" id="gender_u"
+                                   {% if request.GET.gender == 'U' %}checked{% endif %}>
+                            <label for="gender_u">Unisex</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Size -->
+                    <div class="filter-section">
+                        <h6 class="filter-section-title">Size/Type</h6>
+                        <div class="row g-2">
+                            {% for size_code, size_name in filter_form.fields.size.choices %}
+                                {% if size_code %}
+                                    <div class="col-4">
+                                        <input type="checkbox" 
+                                               class="btn-check" 
+                                               name="size" 
+                                               value="{{ size_code }}"
+                                               id="size_{{ size_code }}"
+                                               {% if size_code in selected_sizes %}checked{% endif %}>
+                                        <label class="btn btn-outline-secondary w-100" for="size_{{ size_code }}">
+                                            {{ size_code }}
+                                        </label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Price Range -->
+                    <div class="filter-section">
+                        <h6 class="filter-section-title">Budget Range</h6>
+                        <div class="price-range">
+                            <input type="range" 
+                                   class="price-slider" 
+                                   id="priceSlider"
+                                   min="{{ min_price }}" 
+                                   max="{{ max_price }}"
+                                   value="{{ max_price }}">
+                            <div class="price-values">
+                                <span>$<span id="minPrice">{{ request.GET.min_price|default:min_price }}</span></span>
+                                <span>$<span id="maxPrice">{{ request.GET.max_price|default:max_price }}</span></span>
+                            </div>
+                            <input type="hidden" name="min_price" id="minPriceInput" value="{{ request.GET.min_price|default:min_price }}">
+                            <input type="hidden" name="max_price" id="maxPriceInput" value="{{ request.GET.max_price|default:max_price }}">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Apply Filters
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            <!-- Sort Bar -->
+            <div class="sort-bar animate__animated animate__fadeInRight">
+                <div class="results-count">
+                    Showing <span>{{ page_obj.start_index }}</span> - <span>{{ page_obj.end_index }}</span> 
+                    of <span>{{ paginator.count }}</span> wedding items
+                </div>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <select class="sort-select" name="sort" form="filterForm" onchange="this.form.submit()">
+                        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>
+                            Newest First
+                        </option>
+                        <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>
+                            Price: Low to High
+                        </option>
+                        <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>
+                            Price: High to Low
+                        </option>
+                        <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>
+                            Most Popular
+                        </option>
+                        <option value="rated" {% if request.GET.sort == 'rated' %}selected{% endif %}>
+                            Top Rated
+                        </option>
+                    </select>
+                    
+                    <div class="view-toggle">
+                        <button type="button" class="view-btn active" id="gridView" title="Grid View">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button type="button" class="view-btn" id="listView" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="row g-4" id="productsContainer">
+                {% for product in products %}
+                    <div class="col-xl-4 col-lg-6 col-md-6 product-item">
+                        <div class="product-card animate__animated animate__fadeInUp" 
+                             data-product-id="{{ product.id }}">
+                             
+                            {% if product.discount_percentage > 0 %}
+                                <div class="product-badge badge-sale">
+                                    -{{ product.discount_percentage }}%
+                                </div>
+                            {% elif product.is_new %}
+                                <div class="product-badge badge-new">New</div>
+                            {% elif product.is_featured %}
+                                <div class="product-badge badge-featured">Featured</div>
+                            {% endif %}
+                            
+                            <div class="product-image">
+                                {% if product.main_image %}
+                                    <img src="{{ product.main_image.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ product.name }}">
+                                {% endif %}
+                                
+                                <div class="product-overlay">
+                                    <button class="overlay-btn" onclick="event.stopPropagation(); quickView({{ product.id }})" title="Quick View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="overlay-btn" onclick="event.stopPropagation(); addToWishlist({{ product.id }})" title="Add to Wishlist">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="product-category">
+                                    {{ product.category.name }}
+                                </div>
+                                <h5 class="product-title">{{ product.name }}</h5>
+                                
+                                <div class="product-rating">
+                                    {% with avg_rating=product.reviews.all|dictsort:'rating'|last %}
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= product.avg_rating|default:0 %}
+                                                <i class="fas fa-star rating-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star rating-star empty"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="rating-count">({{ product.reviews.count }})</span>
+                                    {% endwith %}
+                                </div>
+                                
+                                <div class="product-price">
+                                    {% if product.discount_price and product.discount_price < product.price %}
+                                        <span class="current-price">FRw {{ product.discount_price }}</span>
+                                        <span class="old-price">FRw {{ product.price }}</span>
+                                        <div class="discount-info">
+                                            <span class="discount-percentage">{{ product.discount_percentage }}% off</span>
+                                        </div>
+                                    {% else %}
+                                        <span class="current-price">FRw {{ product.price }}</span>
+                                        {% if product.discount_price %}
+                                            <div class="discount-info">
+                                                <span class="discount-note">Discount: FRw {{ product.discount_price }}</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="product-stock">
+                                    {% if product.stock > 10 %}
+                                        <span class="stock-in"><i class="fas fa-check-circle"></i> In Stock</span>
+                                    {% elif product.stock > 0 %}
+                                        <span class="stock-low"><i class="fas fa-exclamation-triangle"></i> Only {{ product.stock }} left</span>
+                                    {% else %}
+                                        <span class="stock-out"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button class="add-to-cart-btn" 
+                                            onclick="event.stopPropagation(); addToCart({{ product.id }})"
+                                            {% if product.stock == 0 %}disabled{% endif %}>
+                                        <i class="fas fa-shopping-cart me-2"></i>
+                                        {% if product.stock == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <div class="empty-state animate__animated animate__fadeIn">
+                            <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                            <h3>No Wedding Supplies Found</h3>
+                            <p class="text-muted">Try adjusting your filters or search criteria to find the perfect wedding decorations and supplies.</p>
+                            <a href="{% url 'product:list' %}" class="btn btn-primary">
+                                <i class="fas fa-redo me-2"></i>Clear Filters
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav class="mt-5" aria-label="Product pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% url_replace page=page_obj.previous_page_number %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for i in page_obj.paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ i }}</span>
+                                </li>
+                            {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% url_replace page=i %}">{{ i }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% url_replace page=page_obj.next_page_number %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick View Modal -->
+<div class="modal fade quick-view-modal" id="quickViewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                <div class="row g-0">
+                    <div class="col-md-6">
+                        <div class="quick-view-image" id="quickViewImage">
+                            <img src="" alt="" id="quickViewImg">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="quick-view-details" id="quickViewDetails">
+                            <!-- Filled via AJAX -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Price range slider
+    const priceSlider = document.getElementById('priceSlider');
+    const minPriceSpan = document.getElementById('minPrice');
+    const maxPriceSpan = document.getElementById('maxPrice');
+    const minPriceInput = document.getElementById('minPriceInput');
+    const maxPriceInput = document.getElementById('maxPriceInput');
+    
+    priceSlider.addEventListener('input', function() {
+        maxPriceSpan.textContent = this.value;
+        maxPriceInput.value = this.value;
+    });
+    
+    // Grid/List view toggle
+    document.getElementById('gridView').addEventListener('click', function() {
+        document.getElementById('gridView').classList.add('active');
+        document.getElementById('listView').classList.remove('active');
+        document.getElementById('productsContainer').className = 'row g-4';
+    });
+    
+    document.getElementById('listView').addEventListener('click', function() {
+        document.getElementById('listView').classList.add('active');
+        document.getElementById('gridView').classList.remove('active');
+        document.getElementById('productsContainer').className = 'row g-4 list-view';
+    });
+    
+    // Quick View function
+    function quickView(productId) {
+        fetch(`/products/api/quick-view/${productId}/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('quickViewImg').src = data.image || '/static/images/placeholder.jpg';
+                
+                let details = `
+                    <h3 class="mb-3">${data.name}</h3>
+                    <div class="product-rating mb-3">
+                        ${'★'.repeat(Math.round(data.rating || 0))}${'☆'.repeat(5 - Math.round(data.rating || 0))}
+                        <span class="rating-count">(${data.review_count} reviews)</span>
+                    </div>
+                    <div class="product-price mb-3">
+                        <span class="current-price">$${data.price}</span>
+                        ${data.original_price ? `<span class="old-price">$${data.original_price}</span>` : ''}
+                    </div>
+                    <p class="text-muted mb-3">${data.description || ''}</p>
+                    <div class="mb-3">
+                        <strong>Category:</strong> ${data.category}<br>
+                        <strong>Brand:</strong> ${data.brand || 'N/A'}<br>
+                        <strong>Stock:</strong> <span class="${data.in_stock ? 'text-success' : 'text-danger'}">
+                            ${data.in_stock ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                    </div>
+                    <div class="quantity-selector">
+                        <button class="quantity-btn" onclick="decrementQuantity()" ${!data.in_stock ? 'disabled' : ''}>
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="quantity-input" id="quickViewQuantity" value="1" min="1" max="${data.stock}" readonly>
+                        <button class="quantity-btn" onclick="incrementQuantity(${data.stock})" ${!data.in_stock ? 'disabled' : ''}>
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="addToCartFromQuickView(${data.id})" ${!data.in_stock ? 'disabled' : ''}>
+                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                `;
+                
+                document.getElementById('quickViewDetails').innerHTML = details;
+                
+                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+                modal.show();
+            });
+    }
+    
+    // Quantity functions
+    window.decrementQuantity = function() {
+        const input = document.getElementById('quickViewQuantity');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    };
+    
+    window.incrementQuantity = function(max) {
+        const input = document.getElementById('quickViewQuantity');
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    };
+    
+    // Add to cart functions
+    window.addToCart = function(productId) {
+        fetch(`/cart/add/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: new URLSearchParams({
+                'quantity': 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showNotification(data.message, 'success');
+                updateCartCount();
+            } else {
+                showNotification(data.message, 'error');
+            }
+        });
+    };
+
+    window.orderNow = function(productId) {
+        fetch(`/cart/add/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: new URLSearchParams({
+                'quantity': 1
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateCartCount();
+                // Immediately proceed to checkout
+                return fetch('/cart/checkout/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+            }
+            throw new Error(data.message);
+        })
+        .then(response => response.json())
+        .then(checkoutData => {
+            if (checkoutData.status === 'success') {
+                window.location.href = '/cart/order-history/';
+            } else {
+                showNotification(checkoutData.message, 'error');
+            }
+        })
+        .catch(error => {
+            showNotification(error.message || 'Order now failed.', 'error');
+        });
+    };
+    
+    window.addToCartFromQuickView = function(productId) {
+        const quantity = document.getElementById('quickViewQuantity').value;
+        
+        fetch(`/cart/add/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: new URLSearchParams({
+                'quantity': quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showNotification(data.message, 'success');
+                bootstrap.Modal.getInstance(document.getElementById('quickViewModal')).hide();
+                updateCartCount();
+            } else {
+                showNotification(data.message, 'error');
+            }
+        });
+    };
+    
+    // Add to wishlist
+    window.addToWishlist = function(productId) {
+        fetch(`/cart/wishlist/add/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            showNotification(data.message, data.status);
+        });
+    };
+    
+    // Notification function
+    function showNotification(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-5`;
+        alertDiv.style.zIndex = '9999';
+        alertDiv.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

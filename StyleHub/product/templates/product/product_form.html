@@ -1,0 +1,523 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - StyleHub Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-form-wrapper {
+        padding: 50px 0;
+        background: #f8f9fa;
+        min-height: calc(100vh - 200px);
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e1e1e1;
+    }
+    
+    .form-header h2 {
+        color: var(--dark-color);
+        font-weight: 700;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 5px;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e1e1e1;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+    }
+    
+    .image-preview {
+        width: 200px;
+        height: 200px;
+        border: 2px dashed #e1e1e1;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .image-preview.empty {
+        background: #f8f9fa;
+        color: #999;
+    }
+    
+    .image-preview.empty i {
+        font-size: 3rem;
+    }
+    
+    .additional-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .additional-image-item {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .additional-image-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .remove-image:hover {
+        background: var(--danger-color);
+        transform: scale(1.1);
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #e1e1e1;
+    }
+    
+    .btn-save {
+        padding: 12px 30px;
+        border-radius: 25px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+    }
+    
+    .btn-cancel {
+        padding: 12px 30px;
+        border-radius: 25px;
+        background: #e1e1e1;
+        color: var(--dark-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background: #d1d1d1;
+        color: var(--dark-color);
+    }
+    
+    .btn-delete {
+        padding: 12px 30px;
+        border-radius: 25px;
+        background: var(--danger-color);
+        color: white;
+        border: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-left: auto;
+    }
+    
+    .btn-delete:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4);
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    input:checked + .toggle-slider {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+    
+    input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container admin-form-wrapper">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="form-card animate__animated animate__fadeIn">
+                <div class="form-header">
+                    <h2><i class="fas fa-{% if object %}edit{% else %}plus-circle{% endif %} me-2"></i>{{ title }}</h2>
+                    <p class="text-muted">{{ object|yesno:"Update the product details below,Create a new product" }}</p>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data" id="productForm">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="mb-3">Basic Information</h5>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.name.id_for_label }}">Product Name *</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.category.id_for_label }}">Category *</label>
+                                        {{ form.category }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.brand.id_for_label }}">Brand</label>
+                                        {{ form.brand }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.short_description.id_for_label }}">Short Description</label>
+                                {{ form.short_description }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.description.id_for_label }}">Full Description *</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <h5 class="mb-3">Product Status</h5>
+                            
+                            <div class="form-group">
+                                <label for="{{ form.status.id_for_label }}">Status</label>
+                                {{ form.status }}
+                            </div>
+                            
+                            <div class="form-group d-flex align-items-center justify-content-between">
+                                <label for="{{ form.is_featured.id_for_label }}">Featured Product</label>
+                                <label class="toggle-switch">
+                                    {{ form.is_featured }}
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group d-flex align-items-center justify-content-between">
+                                <label for="{{ form.is_active.id_for_label }}">Active</label>
+                                <label class="toggle-switch">
+                                    {{ form.is_active }}
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group d-flex align-items-center justify-content-between">
+                                <label for="{{ form.allow_backorder.id_for_label }}">Allow Backorder</label>
+                                <label class="toggle-switch">
+                                    {{ form.allow_backorder }}
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pricing & Inventory -->
+                    <h5 class="mb-3 mt-4">Pricing & Inventory</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.price.id_for_label }}">Regular Price *</label>
+                                {{ form.price }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.discount_price.id_for_label }}">Discount Price</label>
+                                {{ form.discount_price }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.cost_price.id_for_label }}">Cost Price</label>
+                                {{ form.cost_price }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.stock.id_for_label }}">Stock *</label>
+                                {{ form.stock }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Attributes -->
+                    <h5 class="mb-3 mt-4">Product Attributes</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.gender.id_for_label }}">Gender</label>
+                                {{ form.gender }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.size.id_for_label }}">Size</label>
+                                {{ form.size }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.color.id_for_label }}">Color</label>
+                                {{ form.color }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="{{ form.material.id_for_label }}">Material</label>
+                                {{ form.material }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Images -->
+                    <h5 class="mb-3 mt-4">Product Images</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.main_image.id_for_label }}">Main Image</label>
+                                <div class="image-preview {% if not form.main_image.value %}empty{% endif %}" id="mainImagePreview">
+                                    {% if form.main_image.value %}
+                                        <img src="{{ form.main_image.value.url }}" alt="Preview">
+                                    {% else %}
+                                        <i class="fas fa-image"></i>
+                                    {% endif %}
+                                </div>
+                                {{ form.main_image }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Additional Images</label>
+                                <input type="file" 
+                                       name="additional_images" 
+                                       class="form-control" 
+                                       multiple 
+                                       accept="image/*"
+                                       id="additionalImages">
+                                <div class="additional-images" id="additionalImagesPreview">
+                                    {% if product_images %}
+                                        {% for image in product_images %}
+                                            <div class="additional-image-item">
+                                                <img src="{{ image.image.url }}" alt="Additional">
+                                                <button type="button" class="remove-image" data-image-id="{{ image.id }}">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SEO -->
+                    <h5 class="mb-3 mt-4">SEO Settings</h5>
+                    <div class="form-group">
+                        <label for="{{ form.meta_title.id_for_label }}">Meta Title</label>
+                        {{ form.meta_title }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.meta_description.id_for_label }}">Meta Description</label>
+                        {{ form.meta_description }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.meta_keywords.id_for_label }}">Meta Keywords</label>
+                        {{ form.meta_keywords }}
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save me-2"></i>{{ object|yesno:"Update Product,Create Product" }}
+                        </button>
+                        <a href="{% url 'product:list' %}" class="btn-cancel">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        {% if object %}
+                            <a href="{% url 'product:delete' object.slug %}" class="btn-delete">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Main image preview
+    document.getElementById('{{ form.main_image.id_for_label }}').addEventListener('change', function(e) {
+        const preview = document.getElementById('mainImagePreview');
+        const file = e.target.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                preview.classList.remove('empty');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '<i class="fas fa-image"></i>';
+            preview.classList.add('empty');
+        }
+    });
+    
+    // Additional images preview
+    document.getElementById('additionalImages').addEventListener('change', function(e) {
+        const preview = document.getElementById('additionalImagesPreview');
+        const files = Array.from(e.target.files);
+        
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'additional-image-item';
+                div.innerHTML = `
+                    <img src="${e.target.result}" alt="Additional">
+                    <button type="button" class="remove-image" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                preview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    // Remove existing images
+    document.querySelectorAll('.remove-image').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const imageId = this.dataset.imageId;
+            if (imageId && confirm('Are you sure you want to remove this image?')) {
+                fetch(`/products/image/${imageId}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(() => {
+                    this.parentElement.remove();
+                });
+            } else {
+                this.parentElement.remove();
+            }
+        });
+    });
+    
+    // Form validation
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        const price = parseFloat(document.getElementById('{{ form.price.id_for_label }}').value);
+        const discount = parseFloat(document.getElementById('{{ form.discount_price.id_for_label }}').value);
+        
+        if (discount && discount >= price) {
+            e.preventDefault();
+            alert('Discount price must be less than regular price!');
+        }
+    });
+</script>
+{% endblock %}

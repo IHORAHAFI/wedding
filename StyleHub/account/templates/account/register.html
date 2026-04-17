@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - Wedding Supplies & Decoration{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-wrapper {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 50px 0;
+    }
+    .register-card {
+        background: linear-gradient(135deg, rgba(10, 12, 16, 0.85) 0%, rgba(15, 20, 25, 0.85) 30%, rgba(26, 31, 46, 0.85) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 450px;
+        animation: float 3s ease-in-out infinite;
+        border: 1px solid rgba(212, 175, 55, 0.12);
+    }
+    .register-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .register-header h2 {
+        color: #FFFFFF;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .register-header p {
+        color: #9CA3AF !important;
+    }
+    .register-header .brand-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        animation: spin 10s linear infinite;
+        color: #D4AF37;
+    }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Form controls for register */
+    .register-card .form-control {
+        background: rgba(8, 10, 14, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #E5E7EB !important;
+    }
+    
+    .register-card .form-control::placeholder {
+        color: #6B7280 !important;
+    }
+    
+    .register-card .form-control:focus {
+        background: rgba(10, 12, 18, 0.9) !important;
+        border-color: #D4AF37 !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2) !important;
+    }
+    
+    .register-card .btn-primary {
+        background: linear-gradient(135deg, #D4AF37, #B8960F) !important;
+        border: none !important;
+        color: #1a1a2e !important;
+        font-weight: 600 !important;
+    }
+    
+    .register-card .btn-primary:hover {
+        background: linear-gradient(135deg, #B8960F, #9A7D0F) !important;
+    }
+    
+    .register-card .text-center a {
+        color: #D4AF37;
+        text-decoration: none;
+    }
+    
+    .register-card .text-center a:hover {
+        color: #B8960F;
+    }
+    
+    .register-card .text-muted {
+        color: #9CA3AF !important;
+    }
+    
+    .register-card .alert {
+        background: rgba(239, 68, 68, 0.15) !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        color: #FCA5A5 !important;
+        border-radius: 15px;
+    }
+    
+    .register-card .invalid-feedback {
+        color: #FCA5A5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-wrapper">
+    <div class="register-card animate__animated animate__fadeIn">
+        <div class="register-header">
+            <div class="brand-icon">
+                <i class="fas fa-ring"></i>
+            </div>
+            <h2><i class="fas fa-user-plus me-2"></i>Create Your Wedding Account</h2>
+            <p class="text-muted">Register to plan and manage your wedding supplies and decorations</p>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100 mt-3">
+                <i class="fas fa-user-plus me-2"></i>Register
+            </button>
+        </form>
+        <div class="text-center mt-3">
+            Already have an account? <a href="{% url 'account:login' %}">Login here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

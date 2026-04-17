@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact - StyleHub{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <div class="gradient-panel">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="fw-bold mb-2">Need help with your wedding order?</h1>
+                        <p class="mb-0 text-white-60">Our team is here for you. Choose any contact card below and we’ll respond quickly.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="{% url 'account:profile' %}" class="btn btn-light btn-sm fw-bold"><i class="fas fa-arrow-left me-2"></i>Back to Profile</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 border-top-info">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="avatar bg-primary text-white"><i class="fas fa-headset"></i></div>
+                                <div class="ms-3">
+                                    <h5 class="mb-1">Nishimwe Denyse</h5>
+                                    <small class="text-muted">Customer Success</small>
+                                </div>
+                            </div>
+                            <p class="mb-1"><i class="fas fa-phone me-2 text-primary"></i><strong>Phone:</strong> +250780306724</p>
+                            <p class="mb-1"><i class="fas fa-envelope me-2 text-secondary"></i><strong>Email:</strong> nishime23@gmail.com</p>
+                            <p class="mb-1"><i class="fab fa-whatsapp me-2 text-success"></i><strong>WhatsApp:</strong> +250780325621</p>
+                            <p class="mb-3 mb-0"><i class="fab fa-linkedin me-2 text-info"></i><strong>LinkedIn:</strong> <a class="text-primary" href="https://www.linkedin.com/in/fatimakhan" target="_blank">/fatimakhan</a></p>
+                            <span class="badge bg-soft-primary text-primary py-1 px-2 border rounded-pill">Quick response</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 border-top-success">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="avatar bg-success text-white"><i class="fas fa-handshake"></i></div>
+                                <div class="ms-3">
+                                    <h5 class="mb-1">IHORAHAFI Damascene</h5>
+                                    <small class="text-muted">Sales & Partnerships</small>
+                                </div>
+                            </div>
+                            <p class="mb-1"><i class="fas fa-phone me-2 text-primary"></i><strong>Phone:</strong> +250780372040</p>
+                            <p class="mb-1"><i class="fas fa-envelope me-2 text-secondary"></i><strong>Email:</strong> damaihorahafi@gmail.com</p>
+                            <p class="mb-1"><i class="fab fa-whatsapp me-2 text-success"></i><strong>WhatsApp:</strong> 0780372040</p>
+                            <p class="mb-3 mb-0"><i class="fab fa-linkedin me-2 text-info"></i><strong>LinkedIn:</strong> <a class="text-success" href="https://www.linkedin.com/in/aisharahman" target="_blank">/aisharahman</a></p>
+                            <span class="badge bg-soft-success text-success py-1 px-2 border rounded-pill">Partnerships</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 border-top-warning">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="avatar bg-warning text-dark"><i class="fas fa-tools"></i></div>
+                                <div class="ms-3">
+                                    <h5 class="mb-1">MUKANDAYISENGA Jeannette</h5>
+                                    <small class="text-muted">Technical Support</small>
+                                </div>
+                            </div>
+                            <p class="mb-1"><i class="fas fa-phone me-2 text-primary"></i><strong>Phone:</strong> +250780325030</p>
+                            <p class="mb-1"><i class="fas fa-envelope me-2 text-secondary"></i><strong>Email:</strong> jeannettemukandayisenga24@gmail.com</p>
+                            <p class="mb-1"><i class="fab fa-whatsapp me-2 text-success"></i><strong>WhatsApp:</strong> +250780325030</p>
+                            <p class="mb-3 mb-0"><i class="fab fa-linkedin me-2 text-info"></i><strong>LinkedIn:</strong> <a class="text-warning" href="https://www.linkedin.com/in/omaralvi" target="_blank">/omaralvi</a></p>
+                            <span class="badge bg-soft-warning text-warning py-1 px-2 border rounded-pill">Technical help</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 mb-4">
+                <a href="{% url 'home' %}" class="btn btn-primary px-4 py-2"><i class="fas fa-arrow-left me-2"></i>Continue Shopping</a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Our Kigali Location</h4>
+                    <p class="text-muted">Visit us at Makuza Building, Kigali.</p>
+                    <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.533456051215!2d30.059547715190507!3d-1.9473913378856731!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca7f7f8f8f8f9%3A0x7f7f7f7f7f7f7f7f!2sMakuza%20Building%2C%20Kigali%2C%20Rwanda!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+                            width="600"
+                            height="450"
+                            class="map-iframe"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
