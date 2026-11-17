@@ -1,0 +1,13 @@
+
+[project]
+name = "wedding-stylehub"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "Django==4.2.7",
+]
+
+[dependency-groups]
+dev = [
+    "workers-py",
+]
