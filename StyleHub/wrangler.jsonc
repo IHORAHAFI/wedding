@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "wedding",
+  "main": "worker.py",
+  "compatibility_date": "2026-11-17",
+  "compatibility_flags": [
+    "python_workers"
+  ]
+}
